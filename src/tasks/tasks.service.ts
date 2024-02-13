@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import { CreateTaskDto } from './dto/create-task.dto'
 import { UpdateTaskDto } from './dto/update-task.dto'
+import { UserIdType } from 'src/shared/types/props'
 
 @Injectable()
 export class TasksService {
@@ -13,16 +14,16 @@ export class TasksService {
     return `This action returns all tasks`
   }
 
-  findOne(id: number) {
+  findOne(id: UserIdType) {
     return `This action returns a #${id} task`
   }
 
-  update(id: number, updateTaskDto: UpdateTaskDto) {
+  update(id: UserIdType, updateTaskDto: UpdateTaskDto) {
     console.log({ updateTaskDto })
     return `This action updates a #${id} task`
   }
 
-  remove(id: number) {
+  remove(id: UserIdType) {
     return `This action removes a #${id} task`
   }
 }

@@ -1,6 +1,7 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { AuthDto } from 'src/shared/dto/auth.dto'
+import { UserIdType } from 'src/shared/types/props'
 import { User } from 'src/typeorm/entities/User'
 import { Repository } from 'typeorm'
 
@@ -12,14 +13,14 @@ export class UsersService {
     return this.userRepository.find()
   }
 
-  async findUser(id: number) {
+  async findUser(id: UserIdType) {
     const user = await this.userRepository.findOne({ where: { id } })
     if (!user) throw new NotFoundException(`User with id:${id} is not found.`)
 
     return user
   }
 
-  async updateUser(id: number, updateUserDetails: AuthDto) {
+  async updateUser(id: UserIdType, updateUserDetails: AuthDto) {
     try {
       const updateResult = await this.userRepository.update({ id }, updateUserDetails)
 
@@ -31,7 +32,7 @@ export class UsersService {
     }
   }
 
-  async deleteUser(id: number) {
+  async deleteUser(id: UserIdType) {
     try {
       const deleteResult = await this.userRepository.delete({ id })
 
