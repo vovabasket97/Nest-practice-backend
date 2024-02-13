@@ -1,6 +1,6 @@
-import { Injectable } from '@nestjs/common'
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
-import { CreateUserParams, UpdateUserParams } from 'src/shared/types/props'
+import { AuthDto } from 'src/shared/dto/auth.dto'
 import { User } from 'src/typeorm/entities/User'
 import { Repository } from 'typeorm'
 
@@ -12,23 +12,34 @@ export class UsersService {
     return this.userRepository.find()
   }
 
-  findUser(id: number) {
-    return this.userRepository.findOne({ where: { id } })
+  async findUser(id: number) {
+    const user = await this.userRepository.findOne({ where: { id } })
+    if (!user) throw new NotFoundException(`User with id:${id} is not found.`)
+
+    return user
   }
 
-  updateUser(id: number, updateUserDetails: UpdateUserParams) {
-    return this.userRepository.update({ id }, updateUserDetails)
+  async updateUser(id: number, updateUserDetails: AuthDto) {
+    try {
+      const updateResult = await this.userRepository.update({ id }, updateUserDetails)
+
+      if (updateResult.affected === 0) throw new NotFoundException(`User with id:${id} is not found.`)
+
+      return updateResult
+    } catch (error) {
+      throw new BadRequestException(error.sqlMessage)
+    }
   }
 
-  deleteUser(id: number) {
-    return this.userRepository.delete({ id })
-  }
+  async deleteUser(id: number) {
+    try {
+      const deleteResult = await this.userRepository.delete({ id })
 
-  createUser(userDetails: CreateUserParams) {
-    const newUser = this.userRepository.create({
-      ...userDetails,
-      createdAt: new Date(),
-    })
-    return this.userRepository.save(newUser)
+      if (deleteResult.affected === 0) throw new NotFoundException(`User with id:${id} is not found.`)
+
+      return deleteResult
+    } catch (error) {
+      throw new BadRequestException(error.sqlMessage || error.message)
+    }
   }
 }

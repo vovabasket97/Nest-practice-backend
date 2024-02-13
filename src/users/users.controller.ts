@@ -1,6 +1,6 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put } from '@nestjs/common'
-import { CreateUserDto, UpdateUserDto } from './users.model'
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Put, UsePipes, ValidationPipe } from '@nestjs/common'
 import { UsersService } from './users.service'
+import { AuthDto } from 'src/shared/dto/auth.dto'
 
 @Controller('users')
 export class UsersController {
@@ -16,13 +16,9 @@ export class UsersController {
     return this.userService.findUser(id)
   }
 
-  @Post()
-  createUser(@Body() createUserDto: CreateUserDto) {
-    return this.userService.createUser(createUserDto)
-  }
-
+  @UsePipes(new ValidationPipe())
   @Put(':id')
-  updateUser(@Param('id', ParseIntPipe) id: number, @Body() updateUserDto: UpdateUserDto) {
+  updateUser(@Param('id', ParseIntPipe) id: number, @Body() updateUserDto: AuthDto) {
     return this.userService.updateUser(id, updateUserDto)
   }
 
