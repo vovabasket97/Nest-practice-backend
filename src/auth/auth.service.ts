@@ -9,6 +9,7 @@ import { IJWTObject } from 'src/shared/types/props'
 import { User } from 'src/typeorm/entities/User'
 import { filterUserFields } from 'src/utils/filterUserFields'
 import { Repository } from 'typeorm'
+import { UpdateJWTTokens } from './dto/jwtUpdate.dto'
 
 @Injectable()
 export class AuthService {
@@ -69,6 +70,21 @@ export class AuthService {
     return {
       user: filterUserFields(user),
       ...tokens,
+    }
+  }
+
+  async getNewTokens({ refreshToken }: UpdateJWTTokens) {
+    try {
+      if (!refreshToken) throw new UnauthorizedException('Please sign in.')
+
+      const tokenData = await this.jwtService.verifyAsync(refreshToken)
+      if (!tokenData) throw new UnauthorizedException('Invalid token or expired.')
+
+      const tokens = await this.issueTokenPair({ id: tokenData.id, username: tokenData.username })
+
+      return { accessToken: tokens.accessToken, refreshToken }
+    } catch (error) {
+      throw new UnauthorizedException(error.message || 'Please sign in.')
     }
   }
 }
