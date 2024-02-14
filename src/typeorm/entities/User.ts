@@ -18,4 +18,7 @@ export class User {
 
   @Column({ nullable: true })
   authStrategy: string
+
+  @Column({ default: false })
+  isAdmin: boolean
 }

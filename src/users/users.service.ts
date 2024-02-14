@@ -20,7 +20,7 @@ export class UsersService {
     return user
   }
 
-  async updateUser(id: UserIdType, updateUserDetails: AuthDto) {
+  async updateUser(id: UserIdType, updateUserDetails: Partial<AuthDto>) {
     try {
       const updateResult = await this.userRepository.update({ id }, updateUserDetails)
 
